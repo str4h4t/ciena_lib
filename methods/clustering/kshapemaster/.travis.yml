@@ -1,0 +1,20 @@
+language: python
+sudo: false
+python:
+  - "2.7"
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "nightly"
+  - "pypy"
+  - "pypy3"
+matrix:
+  allow_failures:
+    # numpy for pypy3 is still work in progress
+    - python: pypy3
+    # travis version's of pypy is too old
+    - python: pypy
+install: pip install -r requirements.txt
+script: python setup.py test

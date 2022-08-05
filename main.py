@@ -1,16 +1,27 @@
-# This is a sample Python script.
+import configparser
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import pandas as pd
 
+import switch as sw
+import pickle as pkl
+import warnings
+warnings.filterwarnings('ignore')
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    config = configparser.ConfigParser()
+    config.read('model_config.ini')
+    method = config['main'].get('model_name')
+    validate = bool('True' == config['main'].get('validation'))
+    params = config['main'].get('parameters')
+    norm = bool(config['main'].get('normalization'))
+    ts_loc = config['main'].get('ts_file_loc')
+    threshold = float(config['main'].get('threshold'))
+    ts_data = pd.read_pickle(ts_loc)
+    if validate:
+        val_loc = config['main'].get('val_file_loc')
+        val_data = pd.read_pickle(val_loc)
+        meth = sw.switch(ts_data, method, validate, norm, threshold, params, val_data)
+    else:
+        meth = sw.switch(ts_data, method, validate, norm, threshold, params)
+    meth.execute_method()
+    print("Done")
